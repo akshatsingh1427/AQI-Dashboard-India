@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AQI Project — FDA Methodology Report</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #faf8ff;
+            --bg2: #f3f0ff;
+            --surface: #ffffff;
+            --surface2: #f7f5ff;
+            --border: rgba(124, 58, 237, 0.12);
+            --border2: rgba(124, 58, 237, 0.22);
+            --purple-deep: #4c1d95;
+            --purple-main: #7c3aed;
+            --purple-mid: #8b5cf6;
+            --purple-light: #a78bfa;
+            --purple-pale: #ede9fe;
+            --purple-ghost: #f5f3ff;
+            --accent: #6d28d9;
+            --accent2: #c026d3;
+            --text: #1e1b4b;
+            --text2: #3730a3;
+            --muted: #6b7280;
+            --muted2: #9ca3af;
+            --success: #059669;
+            --warn: #d97706;
+            --danger: #dc2626;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background:
+                radial-gradient(ellipse 70% 50% at 10% 0%, rgba(124,58,237,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 90% 90%, rgba(192,38,211,0.05) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 60% at 50% 50%, rgba(109,40,217,0.03) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        #scroll-bar {
+            position: fixed; top: 0; left: 0; height: 3px; z-index: 999;
+            background: linear-gradient(90deg, var(--purple-main), var(--accent2));
+            width: 0%;
+            transition: width 0.1s;
+            box-shadow: 0 0 8px rgba(124,58,237,0.4);
+        }
+
+        /* NAV */
+        nav {
+            position: sticky; top: 0; z-index: 100;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 1rem 3rem;
+            background: rgba(250,248,255,0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border2);
+        }
+        .nav-brand {
+            display: flex; align-items: center; gap: 12px;
+            font-size: 1.1rem; font-weight: 700;
+            color: var(--purple-deep);
+            letter-spacing: -0.3px;
+        }
+        .nav-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            background: linear-gradient(135deg, var(--purple-main), var(--accent2));
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 0.95rem;
+            box-shadow: 0 4px 14px rgba(124,58,237,0.35);
+        }
+        .nav-links { display: flex; gap: 8px; }
+        .nav-pill {
+            background: var(--purple-ghost);
+            border: 1px solid var(--border2);
+            border-radius: 50px;
+            padding: 5px 16px;
+            font-size: 0.8rem;
+            color: var(--purple-main);
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-family: Georgia, serif;
+        }
+        .nav-pill:hover {
+            background: var(--purple-main);
+            color: white;
+            box-shadow: 0 4px 14px rgba(124,58,237,0.3);
+        }
+
+        /* HERO */
+        .hero {
+            position: relative; z-index: 1;
+            text-align: center;
+            padding: 5rem 2rem 4rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--purple-pale);
+            border: 1px solid rgba(124,58,237,0.25);
+            border-radius: 50px;
+            padding: 6px 20px;
+            font-size: 0.78rem;
+            color: var(--purple-main);
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            font-weight: 700;
+            margin-bottom: 1.8rem;
+            animation: fadeDown 0.7s ease both;
+        }
+        .hero h1 {
+            font-size: clamp(2rem, 4.5vw, 3.6rem);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -1.5px;
+            color: var(--purple-deep);
+            margin-bottom: 1rem;
+            animation: fadeDown 0.85s ease both;
+        }
+        .hero h1 em {
+            font-style: normal;
+            background: linear-gradient(135deg, var(--purple-main), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-sub {
+            font-size: 1.05rem;
+            color: var(--muted);
+            max-width: 620px;
+            margin: 0 auto 3rem;
+            line-height: 1.75;
+            animation: fadeDown 1s ease both;
+        }
+
+        /* CTA BUTTONS */
+        .cta-row {
+            display: flex; align-items: center; justify-content: center;
+            gap: 16px; flex-wrap: wrap;
+            animation: fadeDown 1.1s ease both;
+        }
+        .btn-primary {
+            display: inline-flex; align-items: center; gap: 10px;
+            background: linear-gradient(135deg, var(--purple-main), var(--accent2));
+            color: white;
+            border: none; border-radius: 14px;
+            padding: 14px 32px;
+            font-size: 1rem; font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            font-family: Georgia, serif;
+            box-shadow: 0 8px 30px rgba(124,58,237,0.35);
+            transition: all 0.3s;
+            letter-spacing: -0.2px;
+        }
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 40px rgba(124,58,237,0.45);
+        }
+        .btn-secondary {
+            display: inline-flex; align-items: center; gap: 10px;
+            background: white;
+            color: var(--purple-main);
+            border: 2px solid var(--border2);
+            border-radius: 14px;
+            padding: 13px 28px;
+            font-size: 1rem; font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            font-family: Georgia, serif;
+            transition: all 0.3s;
+        }
+        .btn-secondary:hover {
+            background: var(--purple-ghost);
+            border-color: var(--purple-main);
+            transform: translateY(-2px);
+        }
+
+        /* DIVIDER */
+        .divider {
+            width: 60px; height: 3px;
+            background: linear-gradient(90deg, var(--purple-main), var(--accent2));
+            border-radius: 3px;
+            margin: 0 auto 1.5rem;
+        }
+
+        /* MAIN LAYOUT */
+        .main {
+            position: relative; z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2.5rem 6rem;
+        }
+
+        /* SECTION */
+        .section {
+            margin-bottom: 4rem;
+        }
+        .section-header {
+            display: flex; align-items: flex-start; gap: 18px;
+            margin-bottom: 2rem;
+            padding-bottom: 1.2rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .section-number {
+            width: 46px; height: 46px; border-radius: 12px;
+            background: linear-gradient(135deg, var(--purple-main), var(--accent2));
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1rem; font-weight: 800;
+            flex-shrink: 0;
+            box-shadow: 0 4px 16px rgba(124,58,237,0.3);
+        }
+        .section-title {
+            font-size: 1.5rem; font-weight: 800;
+            color: var(--purple-deep);
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+        .section-subtitle {
+            font-size: 0.88rem;
+            color: var(--muted);
+            font-style: italic;
+        }
+
+        /* INFO CARDS */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+            margin-bottom: 1.5rem;
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.6rem;
+            position: relative;
+            overflow: hidden;
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+        .card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--purple-main), var(--accent2));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .card:hover {
+            box-shadow: 0 12px 40px rgba(124,58,237,0.1);
+            transform: translateY(-3px);
+        }
+        .card:hover::before { opacity: 1; }
+
+        .card-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; margin-bottom: 14px;
+        }
+        .card-title {
+            font-size: 1rem; font-weight: 700;
+            color: var(--purple-deep);
+            margin-bottom: 8px;
+        }
+        .card-body {
+            font-size: 0.88rem;
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        /* STEP LIST */
+        .step-list {
+            display: flex; flex-direction: column; gap: 14px;
+        }
+        .step-item {
+            display: flex; gap: 16px; align-items: flex-start;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.3rem 1.5rem;
+            transition: box-shadow 0.25s;
+        }
+        .step-item:hover {
+            box-shadow: 0 6px 24px rgba(124,58,237,0.08);
+        }
+        .step-num {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--purple-pale);
+            border: 2px solid rgba(124,58,237,0.25);
+            color: var(--purple-main);
+            font-size: 0.82rem; font-weight: 800;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .step-content {}
+        .step-title {
+            font-size: 0.97rem; font-weight: 700;
+            color: var(--purple-deep);
+            margin-bottom: 5px;
+        }
+        .step-desc {
+            font-size: 0.85rem;
+            color: var(--muted);
+            line-height: 1.65;
+        }
+        .step-tag {
+            display: inline-block;
+            background: var(--purple-pale);
+            color: var(--purple-main);
+            border-radius: 6px;
+            padding: 2px 9px;
+            font-size: 0.73rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-top: 7px;
+        }
+
+        /* CHART TABLE */
+        .chart-table-wrap {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .chart-table-head {
+            background: var(--purple-ghost);
+            border-bottom: 1px solid var(--border);
+            padding: 14px 20px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .chart-table-head h4 {
+            font-size: 0.92rem; font-weight: 700;
+            color: var(--purple-deep);
+        }
+        table { width: 100%; border-collapse: collapse; }
+        thead tr { background: var(--purple-ghost); }
+        th {
+            padding: 12px 18px; text-align: left;
+            font-size: 0.73rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1.5px;
+            color: var(--purple-main);
+        }
+        tbody tr {
+            border-top: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+        tbody tr:hover { background: var(--purple-ghost); }
+        td { padding: 11px 18px; font-size: 0.86rem; color: var(--text); line-height: 1.5; }
+        .td-tag {
+            display: inline-block;
+            padding: 2px 9px; border-radius: 8px;
+            font-size: 0.73rem; font-weight: 700;
+        }
+        .tag-blue { background: rgba(99,102,241,0.1); color: #4f46e5; }
+        .tag-violet { background: rgba(124,58,237,0.1); color: var(--purple-main); }
+        .tag-pink { background: rgba(192,38,211,0.1); color: #9333ea; }
+        .tag-green { background: rgba(5,150,105,0.1); color: var(--success); }
+        .tag-amber { background: rgba(217,119,6,0.1); color: var(--warn); }
+        .tag-red { background: rgba(220,38,38,0.1); color: var(--danger); }
+
+        /* PRINCIPLE GRID */
+        .principle-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+        .principle-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.4rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .principle-card:hover {
+            border-color: var(--purple-light);
+            box-shadow: 0 8px 28px rgba(124,58,237,0.1);
+            transform: translateY(-2px);
+        }
+        .principle-icon {
+            font-size: 2rem; margin-bottom: 12px;
+            display: block;
+        }
+        .principle-title {
+            font-size: 0.93rem; font-weight: 700;
+            color: var(--purple-deep);
+            margin-bottom: 8px;
+        }
+        .principle-desc {
+            font-size: 0.82rem;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        /* MODEL BLOCK */
+        .model-block {
+            background: linear-gradient(135deg, var(--purple-ghost), #fff);
+            border: 1.5px solid rgba(124,58,237,0.2);
+            border-radius: 18px;
+            padding: 2rem;
+            margin-bottom: 18px;
+        }
+        .model-header {
+            display: flex; align-items: center; gap: 14px;
+            margin-bottom: 1.2rem;
+        }
+        .model-icon-wrap {
+            width: 48px; height: 48px; border-radius: 12px;
+            background: linear-gradient(135deg, var(--purple-main), var(--accent2));
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1.2rem;
+            box-shadow: 0 4px 14px rgba(124,58,237,0.3);
+        }
+        .model-name { font-size: 1.2rem; font-weight: 800; color: var(--purple-deep); }
+        .model-type { font-size: 0.8rem; color: var(--muted); font-style: italic; }
+        .model-body { font-size: 0.9rem; color: var(--text); line-height: 1.75; }
+        .model-props {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px; margin-top: 1.2rem;
+        }
+        .model-prop {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 14px;
+        }
+        .model-prop-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .model-prop-val { font-size: 0.9rem; font-weight: 700; color: var(--purple-deep); }
+
+        /* DATASET BANNER */
+        .dataset-banner {
+            background: linear-gradient(135deg, var(--purple-pale), #fdf4ff);
+            border: 1.5px solid rgba(124,58,237,0.2);
+            border-radius: 18px;
+            padding: 2rem 2.5rem;
+            display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        .dataset-stat { text-align: center; }
+        .dataset-val {
+            font-size: 2rem; font-weight: 800;
+            color: var(--purple-main);
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+        .dataset-lbl { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+        .dataset-divider { width: 1px; height: 50px; background: var(--border2); }
+        .dataset-desc { flex: 1; min-width: 200px; }
+        .dataset-desc h4 { font-size: 1rem; font-weight: 700; color: var(--purple-deep); margin-bottom: 6px; }
+        .dataset-desc p { font-size: 0.87rem; color: var(--muted); line-height: 1.65; }
+
+        /* CALLOUT */
+        .callout {
+            border-left: 4px solid var(--purple-main);
+            background: var(--purple-ghost);
+            border-radius: 0 12px 12px 0;
+            padding: 1rem 1.4rem;
+            font-size: 0.88rem;
+            color: var(--text2);
+            line-height: 1.7;
+            margin: 1.2rem 0;
+        }
+
+        /* CTA BOTTOM */
+        .cta-bottom {
+            position: relative; z-index: 1;
+            background: linear-gradient(135deg, var(--purple-deep), #4a1d96, #6d28d9);
+            padding: 4rem 2rem;
+            text-align: center;
+            border-top: 1px solid rgba(124,58,237,0.2);
+        }
+        .cta-bottom h2 {
+            font-size: clamp(1.6rem, 3vw, 2.4rem);
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+        }
+        .cta-bottom p { color: rgba(255,255,255,0.7); font-size: 1rem; margin-bottom: 2.5rem; }
+        .cta-btn-wrap { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+        .btn-white {
+            display: inline-flex; align-items: center; gap: 10px;
+            background: white;
+            color: var(--purple-deep);
+            border: none; border-radius: 14px;
+            padding: 14px 32px;
+            font-size: 1rem; font-weight: 700;
+            cursor: pointer; text-decoration: none;
+            font-family: Georgia, serif;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        .btn-white:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 40px rgba(0,0,0,0.3);
+        }
+        .btn-outline-white {
+            display: inline-flex; align-items: center; gap: 10px;
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-radius: 14px;
+            padding: 13px 28px;
+            font-size: 1rem; font-weight: 700;
+            cursor: pointer; text-decoration: none;
+            font-family: Georgia, serif;
+            transition: all 0.3s;
+        }
+        .btn-outline-white:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: white;
+        }
+
+        /* FOOTER */
+        footer {
+            background: white;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            padding: 2rem;
+        }
+        footer p { font-size: 0.82rem; color: var(--muted); line-height: 1.8; }
+        footer strong { color: var(--purple-main); }
+
+        /* ANIMATIONS */
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            opacity: 0; transform: translateY(24px);
+            transition: opacity 0.65s ease, transform 0.65s ease;
+        }
+        .fade-in.visible {
+            opacity: 1; transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            nav { padding: 1rem 1.5rem; }
+            .main { padding: 0 1.5rem 4rem; }
+            .dataset-banner { flex-direction: column; gap: 1rem; }
+            .dataset-divider { display: none; }
+            .hero { padding: 3.5rem 1.5rem 3rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="scroll-bar"></div>
+
+<!-- NAV -->
+<nav>
+    <div class="nav-brand">
+        <div class="nav-icon"><i class="fas fa-wind"></i></div>
+        AQI Intelligence — Methodology Report
+    </div>
+    <div class="nav-links">
+        <a href="AQIHTML.html" class="nav-pill"><i class="fas fa-chart-bar"></i> &nbsp;Dashboard</a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-badge"><i class="fas fa-flask"></i> &nbsp; Formal Analysis Report</div>
+    <h1>India AQI Project —<br><em>FDA Methodology</em></h1>
+    <p class="hero-sub">
+        A complete walkthrough of the Formal Data Analysis principles, preprocessing steps, exploratory analysis, predictive modelling, and all visualisations employed in this project.
+    </p>
+    <div class="cta-row">
+        <a href="AQIHTML.html" class="btn-primary">
+            <i class="fas fa-chart-area"></i> Open Visualisation Dashboard
+        </a>
+        <a href="#eda" class="btn-secondary">
+            <i class="fas fa-arrow-down"></i> Read Methodology
+        </a>
+    </div>
+</section>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+    <!-- 1. DATASET OVERVIEW -->
+    <div class="section fade-in" id="dataset">
+        <div class="section-header">
+            <div class="section-number">1</div>
+            <div>
+                <div class="section-title">Dataset Overview</div>
+                <div class="section-subtitle">Source, structure and key attributes of the data used</div>
+            </div>
+        </div>
+
+        <div class="dataset-banner">
+            <div class="dataset-stat">
+                <div class="dataset-val">36</div>
+                <div class="dataset-lbl">States &amp; UTs</div>
+            </div>
+            <div class="dataset-divider"></div>
+            <div class="dataset-stat">
+                <div class="dataset-val">36</div>
+                <div class="dataset-lbl">Cities</div>
+            </div>
+            <div class="dataset-divider"></div>
+            <div class="dataset-stat">
+                <div class="dataset-val">2022–25</div>
+                <div class="dataset-lbl">Time Range</div>
+            </div>
+            <div class="dataset-divider"></div>
+            <div class="dataset-stat">
+                <div class="dataset-val">8</div>
+                <div class="dataset-lbl">Columns</div>
+            </div>
+            <div class="dataset-divider"></div>
+            <div class="dataset-desc">
+                <h4>India AQI Monitoring Dataset</h4>
+                <p>File: <code>AQI.csv</code> — compiled from India's national air quality monitoring network. Covers eight core attributes: country, state, city, last_update (timestamp), pollutant_id, pollutant_min, pollutant_max, and pollutant_avg.</p>
+            </div>
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
+                <div class="card-icon" style="background:rgba(124,58,237,0.1);color:var(--purple-main);"><i class="fas fa-table"></i></div>
+                <div class="card-title">Columnar Structure</div>
+                <div class="card-body">Eight columns record geographic identifiers (country, state, city), a datetime stamp (last_update), the pollutant identifier (pollutant_id), and three pollutant readings: minimum, maximum, and average concentration.</div>
+            </div>
+            <div class="card">
+                <div class="card-icon" style="background:rgba(192,38,211,0.1);color:#9333ea;"><i class="fas fa-clock"></i></div>
+                <div class="card-title">Temporal Scope</div>
+                <div class="card-body">Data spans four complete years — 2022 through 2025 — providing sufficient longitudinal depth for trend analysis, seasonal decomposition, quarterly breakdown, and future-year prediction modelling.</div>
+            </div>
+            <div class="card">
+                <div class="card-icon" style="background:rgba(5,150,105,0.1);color:var(--success);"><i class="fas fa-globe-asia"></i></div>
+                <div class="card-title">Geographic Coverage</div>
+                <div class="card-body">All Indian states and union territories are represented, enabling both state-level granularity and 7-region aggregation across North, South, East, West, Central, Northeast, and Islands.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. FDA PRINCIPLES -->
+    <div class="section fade-in" id="fda">
+        <div class="section-header">
+            <div class="section-number">2</div>
+            <div>
+                <div class="section-title">Principles of Formal Data Analysis (FDA)</div>
+                <div class="section-subtitle">Foundational analytical principles applied throughout this project</div>
+            </div>
+        </div>
+
+        <div class="callout">
+            Formal Data Analysis is a structured, reproducible approach to understanding data through systematic preprocessing, exploration, statistical inference, and communication. The following core principles guided all decisions in this project.
+        </div>
+
+        <div class="principle-grid">
+            <div class="principle-card">
+                <span class="principle-icon">🧹</span>
+                <div class="principle-title">Data Integrity</div>
+                <div class="principle-desc">All missing values are handled explicitly before any analysis. No imputation is performed silently — null regions are either dropped or filled with zero where appropriate (e.g., heatmap pivots).</div>
+            </div>
+            <div class="principle-card">
+                <span class="principle-icon">🔍</span>
+                <div class="principle-title">Exploratory First</div>
+                <div class="principle-desc">Exploratory Data Analysis (EDA) precedes modelling. Distributions, central tendencies, outliers and group structures are examined visually before any predictive algorithm is trained.</div>
+            </div>
+            <div class="principle-card">
+                <span class="principle-icon">📐</span>
+                <div class="principle-title">Feature Engineering</div>
+                <div class="principle-desc">Raw datetime is decomposed into year, month, month_name, and quarter features. A new categorical variable — region — is derived from state names using a domain-knowledge mapping.</div>
+            </div>
+            <div class="principle-card">
+                <span class="principle-icon">📊</span>
+                <div class="principle-title">Aggregation Discipline</div>
+                <div class="principle-desc">All group comparisons use mean aggregation on pollutant_avg. Pivot tables, groupby chains, and merge operations are applied consistently to avoid double-counting or misaligned indices.</div>
+            </div>
+            <div class="principle-card">
+                <span class="principle-icon">🔬</span>
+                <div class="principle-title">Multi-level Analysis</div>
+                <div class="principle-desc">Analysis is conducted at three geographic levels simultaneously — national, regional, and state — allowing findings at each level to corroborate or contextualise the others.</div>
+            </div>
+            <div class="principle-card">
+                <span class="principle-icon">📈</span>
+                <div class="principle-title">Predictive Validation</div>
+                <div class="principle-desc">Predictions are computed only when at least two historical data points exist per entity (state/region). Negative predicted values are clamped to zero to preserve physical plausibility.</div>
+            </div>
+            <div class="principle-card">
+                <span class="principle-icon">🎯</span>
+                <div class="principle-title">Reproducibility</div>
+                <div class="principle-desc">All transformations, groupings, and model fits are contained in a single deterministic Python script. Running the script on the same input always produces the identical output.</div>
+            </div>
+            <div class="principle-card">
+                <span class="principle-icon">📣</span>
+                <div class="principle-title">Communicability</div>
+                <div class="principle-desc">Every analytical finding is translated into an interactive Plotly visualisation embedded in a structured HTML dashboard, ensuring results are accessible to non-technical stakeholders.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. PREPROCESSING & EDA -->
+    <div class="section fade-in" id="eda">
+        <div class="section-header">
+            <div class="section-number">3</div>
+            <div>
+                <div class="section-title">Data Preprocessing &amp; EDA Steps</div>
+                <div class="section-subtitle">Sequential pipeline from raw CSV to analysis-ready dataframe</div>
+            </div>
+        </div>
+
+        <div class="step-list">
+            <div class="step-item">
+                <div class="step-num">01</div>
+                <div class="step-content">
+                    <div class="step-title">Data Ingestion</div>
+                    <div class="step-desc">The dataset is loaded from <code>AQI.csv</code> using <code>pandas.read_csv()</code>. The resulting dataframe contains eight columns covering geography, timestamps, pollutant identifiers, and concentration readings (min, max, avg).</div>
+                    <span class="step-tag">pandas</span>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">02</div>
+                <div class="step-content">
+                    <div class="step-title">Datetime Parsing</div>
+                    <div class="step-desc">The <code>last_update</code> column is converted from string to datetime using <code>pd.to_datetime()</code>. Four derived temporal features are then extracted: <code>year</code>, <code>month</code>, <code>month_name</code>, and <code>quarter</code>, enabling temporal grouping at multiple granularities.</div>
+                    <span class="step-tag">Feature Engineering</span>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">03</div>
+                <div class="step-content">
+                    <div class="step-title">Null Value Handling</div>
+                    <div class="step-desc">Null values arise in two places: (a) the monthly pivot table, where year-month combinations with no readings produce NaN — these are filled with 0 using <code>fillna(0)</code>; and (b) the region column for unmapped states — these are filtered out with <code>pd.notna()</code> before regional aggregation and prediction loops.</div>
+                    <span class="step-tag">Data Quality</span>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">04</div>
+                <div class="step-content">
+                    <div class="step-title">Region Feature Engineering</div>
+                    <div class="step-desc">A domain-knowledge dictionary maps each of India's 36 states and UTs to one of seven geographic regions: North, South, East, West, Central, Northeast, and Islands. This new <code>region</code> column enables an intermediate geographic level of analysis between national and state.</div>
+                    <span class="step-tag">Domain Knowledge</span>
+                    <span class="step-tag" style="margin-left:6px;">Feature Engineering</span>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">05</div>
+                <div class="step-content">
+                    <div class="step-title">Pollutant Level Categorisation</div>
+                    <div class="step-desc">A custom function <code>categorize_pollutant_level()</code> applies rule-based classification to <code>pollutant_avg</code>: values above 100 are labelled High, values between 50 and 100 are Medium, and values below 50 are Low. This categorical variable is appended to the state-pollutant and region-pollutant analysis dataframes.</div>
+                    <span class="step-tag">Binning</span>
+                    <span class="step-tag" style="margin-left:6px;">Rule-based Classification</span>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">06</div>
+                <div class="step-content">
+                    <div class="step-title">Aggregation &amp; Pivot Operations</div>
+                    <div class="step-desc">Multiple group-level aggregations are computed: national yearly trend, monthly averages by year (pivoted to a 12×4 matrix for the heatmap), state-level means, region-level means, state-pollutant cross-tabulations, region-pollutant cross-tabulations, and city count per state. All aggregations use <code>mean</code> as the central statistic on <code>pollutant_avg</code>.</div>
+                    <span class="step-tag">GroupBy</span>
+                    <span class="step-tag" style="margin-left:6px;">Pivot Tables</span>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">07</div>
+                <div class="step-content">
+                    <div class="step-title">State-Pollutant Pivot Matrix</div>
+                    <div class="step-desc">A 2D pivot table is created with states as rows and pollutant types as columns, with <code>pollutant_avg</code> as values and zero-fill for missing combinations. This matrix is used directly to render the State × Pollutant concentration heatmap.</div>
+                    <span class="step-tag">Matrix Construction</span>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">08</div>
+                <div class="step-content">
+                    <div class="step-title">Per-Region Top &amp; Bottom State Extraction</div>
+                    <div class="step-desc">For each of the seven regions, the three most polluted and three cleanest states are extracted using <code>nlargest()</code> and <code>nsmallest()</code> on state-level averages within the region. These are concatenated into unified dataframes for faceted visualisation.</div>
+                    <span class="step-tag">Stratified Ranking</span>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">09</div>
+                <div class="step-content">
+                    <div class="step-title">Dominant Pollutant Identification</div>
+                    <div class="step-desc">For each state and each region, the pollutant with the highest average concentration is identified using <code>idxmax()</code> applied to grouped data. This supports the dominant-pollutant bar chart and the summary table in the Pollutants tab.</div>
+                    <span class="step-tag">Argmax Selection</span>
+                </div>
+            </div>
+            <div class="step-item">
+                <div class="step-num">10</div>
+                <div class="step-content">
+                    <div class="step-title">City-Count Merge for Scatter Analysis</div>
+                    <div class="step-desc">The count of unique cities per state (<code>nunique()</code> on the city column) is computed separately and merged with state-level pollution averages and region labels. The merged dataframe drives the scatter plot comparing urbanisation proxy (city count) against average AQI.</div>
+                    <span class="step-tag">Merge / Join</span>
+                    <span class="step-tag" style="margin-left:6px;">Proxy Variable</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. MODELS USED -->
+    <div class="section fade-in" id="models">
+        <div class="section-header">
+            <div class="section-number">4</div>
+            <div>
+                <div class="section-title">Predictive Models Used</div>
+                <div class="section-subtitle">Machine learning algorithms employed to forecast AQI for 2026</div>
+            </div>
+        </div>
+
+        <div class="model-block">
+            <div class="model-header">
+                <div class="model-icon-wrap"><i class="fas fa-chart-line"></i></div>
+                <div>
+                    <div class="model-name">Polynomial Regression (Degree 2) — Primary Model</div>
+                    <div class="model-type">scikit-learn · PolynomialFeatures + LinearRegression</div>
+                </div>
+            </div>
+            <div class="model-body">
+                <p>For each state and region individually, year values (2022–2025) are used as the sole feature. <code>PolynomialFeatures(degree=2)</code> expands the single feature into a quadratic basis [1, year, year²], which is then fitted via ordinary least squares using <code>LinearRegression</code>. The trained model is used to predict the pollutant average for the year 2026.</p>
+                <p style="margin-top:10px;">Polynomial regression is preferred over simple linear regression here because air quality trends can exhibit non-linear acceleration or deceleration — particularly in states with rapid industrialisation or effective policy interventions during the observed window.</p>
+            </div>
+            <div class="model-props">
+                <div class="model-prop">
+                    <div class="model-prop-label">Degree</div>
+                    <div class="model-prop-val">2 (Quadratic)</div>
+                </div>
+                <div class="model-prop">
+                    <div class="model-prop-label">Training Points</div>
+                    <div class="model-prop-val">4 (2022–2025)</div>
+                </div>
+                <div class="model-prop">
+                    <div class="model-prop-label">Target Variable</div>
+                    <div class="model-prop-val">pollutant_avg</div>
+                </div>
+                <div class="model-prop">
+                    <div class="model-prop-label">Scope</div>
+                    <div class="model-prop-val">Per State / Per Region</div>
+                </div>
+                <div class="model-prop">
+                    <div class="model-prop-label">Libraries</div>
+                    <div class="model-prop-val">scikit-learn</div>
+                </div>
+                <div class="model-prop">
+                    <div class="model-prop-label">Constraint</div>
+                    <div class="model-prop-val">Prediction ≥ 0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="model-block">
+            <div class="model-header">
+                <div class="model-icon-wrap" style="background:linear-gradient(135deg,#059669,#0d9488);"><i class="fas fa-ruler"></i></div>
+                <div>
+                    <div class="model-name">Linear Regression — Fallback Model</div>
+                    <div class="model-type">scikit-learn · LinearRegression</div>
+                </div>
+            </div>
+            <div class="model-body">
+                When the polynomial model raises an exception — for example, when only two data points exist for a state — the pipeline falls back to a simple <code>LinearRegression</code> fitted directly on year values. This ensures every state and region with at least two historical observations receives a 2026 forecast rather than being omitted from the analysis.
+            </div>
+            <div class="model-props">
+                <div class="model-prop">
+                    <div class="model-prop-label">Degree</div>
+                    <div class="model-prop-val">1 (Linear)</div>
+                </div>
+                <div class="model-prop">
+                    <div class="model-prop-label">Trigger</div>
+                    <div class="model-prop-val">Exception in poly fit</div>
+                </div>
+                <div class="model-prop">
+                    <div class="model-prop-label">Min Data Required</div>
+                    <div class="model-prop-val">2 years</div>
+                </div>
+                <div class="model-prop">
+                    <div class="model-prop-label">Constraint</div>
+                    <div class="model-prop-val">Prediction ≥ 0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="callout">
+            <strong>Trend Classification:</strong> Each predicted 2026 value is compared against the 2022–2025 historical mean. If the prediction exceeds the historical mean, the state/region is labelled <em>Increasing</em>. If below, it is labelled <em>Decreasing</em>. If equal, it is labelled <em>Stable</em>. The percentage change is also computed and displayed in the predictions table.
+        </div>
+    </div>
+
+    <!-- 5. CHARTS USED -->
+    <div class="section fade-in" id="charts">
+        <div class="section-header">
+            <div class="section-number">5</div>
+            <div>
+                <div class="section-title">All Charts &amp; Visualisations Produced</div>
+                <div class="section-subtitle">Complete inventory of every graph in the dashboard, with chart type and analytical purpose</div>
+            </div>
+        </div>
+
+        <div class="chart-table-wrap">
+            <div class="chart-table-head">
+                <i class="fas fa-chart-bar" style="color:var(--purple-main);"></i>
+                <h4>Overview Tab — National &amp; Temporal Analysis</h4>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Chart Title</th>
+                        <th>Chart Type</th>
+                        <th>Library</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>National Pollution Trend with 2026 Prediction</td>
+                        <td><span class="td-tag tag-blue">Line + Markers</span></td>
+                        <td>Plotly Graph Objects</td>
+                        <td>Shows year-on-year national AQI with dashed 2026 forecast overlaid</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Pollutant Concentration Levels (All India)</td>
+                        <td><span class="td-tag tag-violet">Horizontal Bar</span></td>
+                        <td>Plotly Express</td>
+                        <td>Ranks all pollutants by their national mean concentration</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Regional Pollution Comparison (7 Regions)</td>
+                        <td><span class="td-tag tag-violet">Vertical Bar</span></td>
+                        <td>Plotly Express</td>
+                        <td>Compares mean AQI across the seven geographic regions</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Monthly Pollution Heatmap (2022–2025)</td>
+                        <td><span class="td-tag tag-pink">Heatmap</span></td>
+                        <td>Plotly Graph Objects</td>
+                        <td>Reveals seasonal patterns — months × years — with annotated values</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Seasonal Pollution Patterns (Area Chart)</td>
+                        <td><span class="td-tag tag-green">Area Chart</span></td>
+                        <td>Plotly Express</td>
+                        <td>Overlays monthly trends for each year on a single area plot</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>Quarterly Pollution Trends (2022–2025)</td>
+                        <td><span class="td-tag tag-blue">Multi-line</span></td>
+                        <td>Plotly Express</td>
+                        <td>Tracks Q1–Q4 progression per year to expose intra-year cycles</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <br>
+
+        <div class="chart-table-wrap">
+            <div class="chart-table-head">
+                <i class="fas fa-brain" style="color:var(--purple-main);"></i>
+                <h4>Predictions Tab — 2026 ML Forecasts</h4>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Chart Title</th>
+                        <th>Chart Type</th>
+                        <th>Library</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>7</td>
+                        <td>Top 20 States by Predicted AQI (2026)</td>
+                        <td><span class="td-tag tag-violet">Grouped Bar</span></td>
+                        <td>Plotly Express</td>
+                        <td>Colour-coded by trend (Increasing / Decreasing / Stable)</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>Region-wise AQI Predictions for 2026</td>
+                        <td><span class="td-tag tag-violet">Vertical Bar</span></td>
+                        <td>Plotly Express</td>
+                        <td>Regional forecast comparison colour-coded by trend direction</td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td>Top 10 States: Historical vs Predicted</td>
+                        <td><span class="td-tag tag-blue">Grouped Bar</span></td>
+                        <td>Plotly Graph Objects</td>
+                        <td>Side-by-side historical mean vs 2026 prediction for top 10 states</td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td>Year-on-Year AQI Change (Waterfall)</td>
+                        <td><span class="td-tag tag-amber">Waterfall</span></td>
+                        <td>Plotly Graph Objects</td>
+                        <td>Shows incremental AQI change year-by-year including 2026 forecast</td>
+                    </tr>
+                    <tr>
+                        <td>11</td>
+                        <td>Top 10 Most Polluted States (Funnel)</td>
+                        <td><span class="td-tag tag-red">Funnel</span></td>
+                        <td>Plotly Graph Objects</td>
+                        <td>Ranked funnel showing relative pollution magnitude across top states</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <br>
+
+        <div class="chart-table-wrap">
+            <div class="chart-table-head">
+                <i class="fas fa-map" style="color:var(--purple-main);"></i>
+                <h4>States Tab — State-level Analysis</h4>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Chart Title</th>
+                        <th>Chart Type</th>
+                        <th>Library</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>12</td>
+                        <td>Top 15 Most Polluted States</td>
+                        <td><span class="td-tag tag-red">Colour Bar</span></td>
+                        <td>Plotly Express</td>
+                        <td>Highlights worst-performing states with gradient colour encoding</td>
+                    </tr>
+                    <tr>
+                        <td>13</td>
+                        <td>Top 10 Cleanest States</td>
+                        <td><span class="td-tag tag-green">Colour Bar</span></td>
+                        <td>Plotly Express</td>
+                        <td>Identifies best-performing states using green gradient palette</td>
+                    </tr>
+                    <tr>
+                        <td>14</td>
+                        <td>Top 20 States by Dominant Pollutant</td>
+                        <td><span class="td-tag tag-violet">Stacked Bar</span></td>
+                        <td>Plotly Express</td>
+                        <td>Shows each state's highest pollutant type and its concentration</td>
+                    </tr>
+                    <tr>
+                        <td>15</td>
+                        <td>Cities Count vs Average Pollution (Scatter)</td>
+                        <td><span class="td-tag tag-blue">Bubble Scatter</span></td>
+                        <td>Plotly Express</td>
+                        <td>Explores relationship between urban density proxy and AQI by region</td>
+                    </tr>
+                    <tr>
+                        <td>16</td>
+                        <td>State × Pollutant Concentration Heatmap</td>
+                        <td><span class="td-tag tag-pink">Matrix Heatmap</span></td>
+                        <td>Plotly Graph Objects</td>
+                        <td>Full cross-tabulation of all states against all pollutant types</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <br>
+
+        <div class="chart-table-wrap">
+            <div class="chart-table-head">
+                <i class="fas fa-globe-asia" style="color:var(--purple-main);"></i>
+                <h4>Regions Tab — Regional Intelligence</h4>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Chart Title</th>
+                        <th>Chart Type</th>
+                        <th>Library</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>17</td>
+                        <td>Year-over-Year Regional Trends</td>
+                        <td><span class="td-tag tag-blue">Multi-line</span></td>
+                        <td>Plotly Express</td>
+                        <td>Tracks each region's annual mean AQI across all four years</td>
+                    </tr>
+                    <tr>
+                        <td>18</td>
+                        <td>Region Pollution Share (Donut)</td>
+                        <td><span class="td-tag tag-pink">Donut / Pie</span></td>
+                        <td>Plotly Express</td>
+                        <td>Proportional share of total national pollution load by region</td>
+                    </tr>
+                    <tr>
+                        <td>19</td>
+                        <td>Region Pollutant Profile (Radar Chart)</td>
+                        <td><span class="td-tag tag-violet">Radar / Spider</span></td>
+                        <td>Plotly Graph Objects</td>
+                        <td>Multi-axis chart showing each region's pollutant mix simultaneously</td>
+                    </tr>
+                    <tr>
+                        <td>20</td>
+                        <td>Pollution Variability by Region (Box Plot)</td>
+                        <td><span class="td-tag tag-amber">Box Plot</span></td>
+                        <td>Plotly Express</td>
+                        <td>Distribution spread, IQR, and outliers for each region</td>
+                    </tr>
+                    <tr>
+                        <td>21</td>
+                        <td>Top 3 Most Polluted States per Region</td>
+                        <td><span class="td-tag tag-red">Faceted Bar</span></td>
+                        <td>Plotly Express</td>
+                        <td>Facet grid — one panel per region — showing worst three states</td>
+                    </tr>
+                    <tr>
+                        <td>22</td>
+                        <td>Top 3 Cleanest States per Region</td>
+                        <td><span class="td-tag tag-green">Faceted Bar</span></td>
+                        <td>Plotly Express</td>
+                        <td>Facet grid — one panel per region — showing cleanest three states</td>
+                    </tr>
+                    <tr>
+                        <td>23</td>
+                        <td>Pollutant Breakdown by Region</td>
+                        <td><span class="td-tag tag-blue">Grouped Bar</span></td>
+                        <td>Plotly Express</td>
+                        <td>All pollutant types side-by-side for each region</td>
+                    </tr>
+                    <tr>
+                        <td>24</td>
+                        <td>Region-wise AQI Predictions 2026</td>
+                        <td><span class="td-tag tag-violet">Bar (Trend-coded)</span></td>
+                        <td>Plotly Express</td>
+                        <td>Forecast bar chart repeated in regions tab for regional context</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <br>
+
+        <div class="chart-table-wrap">
+            <div class="chart-table-head">
+                <i class="fas fa-flask" style="color:var(--purple-main);"></i>
+                <h4>Pollutants Tab — Pollutant Deep Dive</h4>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Chart Title</th>
+                        <th>Chart Type</th>
+                        <th>Library</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>25</td>
+                        <td>Pollutant Concentration Levels (All India)</td>
+                        <td><span class="td-tag tag-violet">Horizontal Bar</span></td>
+                        <td>Plotly Express</td>
+                        <td>National ranking of pollutant mean concentrations</td>
+                    </tr>
+                    <tr>
+                        <td>26</td>
+                        <td>Pollutant Value Distribution (Violin Plot)</td>
+                        <td><span class="td-tag tag-pink">Violin + Box</span></td>
+                        <td>Plotly Express</td>
+                        <td>Full distribution shape per pollutant type including outliers</td>
+                    </tr>
+                    <tr>
+                        <td>27</td>
+                        <td>State × Pollutant Concentration Heatmap</td>
+                        <td><span class="td-tag tag-pink">Matrix Heatmap</span></td>
+                        <td>Plotly Graph Objects</td>
+                        <td>Repeated full matrix for pollutant-centric exploration</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <br>
+
+        <div class="chart-table-wrap">
+            <div class="chart-table-head">
+                <i class="fas fa-chart-pie" style="color:var(--purple-main);"></i>
+                <h4>Advanced Tab — Hierarchical &amp; Structural Analysis</h4>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Chart Title</th>
+                        <th>Chart Type</th>
+                        <th>Library</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>28</td>
+                        <td>Sunburst: Region → State Hierarchy</td>
+                        <td><span class="td-tag tag-amber">Sunburst</span></td>
+                        <td>Plotly Express</td>
+                        <td>Drillable two-level hierarchy showing region → state pollution shares</td>
+                    </tr>
+                    <tr>
+                        <td>29</td>
+                        <td>Treemap: State Pollution by Region</td>
+                        <td><span class="td-tag tag-green">Treemap</span></td>
+                        <td>Plotly Express</td>
+                        <td>Area-proportional tiles for all states grouped within regions</td>
+                    </tr>
+                    <tr>
+                        <td>30</td>
+                        <td>Pollutant Distribution (Violin)</td>
+                        <td><span class="td-tag tag-pink">Violin</span></td>
+                        <td>Plotly Express</td>
+                        <td>Statistical spread of each pollutant type across all records</td>
+                    </tr>
+                    <tr>
+                        <td>31</td>
+                        <td>Regional Variability Box Plot</td>
+                        <td><span class="td-tag tag-amber">Box Plot</span></td>
+                        <td>Plotly Express</td>
+                        <td>Interquartile ranges and whiskers for each region's readings</td>
+                    </tr>
+                    <tr>
+                        <td>32</td>
+                        <td>City Count vs Pollution Scatter</td>
+                        <td><span class="td-tag tag-blue">Bubble Scatter</span></td>
+                        <td>Plotly Express</td>
+                        <td>Urbanisation vs AQI relationship with region colour coding</td>
+                    </tr>
+                    <tr>
+                        <td>33</td>
+                        <td>Radar: Region Pollutant Profile</td>
+                        <td><span class="td-tag tag-violet">Spider Chart</span></td>
+                        <td>Plotly Graph Objects</td>
+                        <td>Multi-dimensional pollutant profile overlaid per region</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <br>
+
+        <div class="chart-table-wrap">
+            <div class="chart-table-head">
+                <i class="fas fa-calendar-alt" style="color:var(--purple-main);"></i>
+                <h4>Time Series &amp; Rankings Tabs — Additional Analysis</h4>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Chart Title</th>
+                        <th>Chart Type</th>
+                        <th>Library</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>34</td>
+                        <td>Monthly Pollution Heatmap</td>
+                        <td><span class="td-tag tag-pink">Heatmap</span></td>
+                        <td>Plotly Graph Objects</td>
+                        <td>Seasonal patterns at monthly granularity in Time Series tab</td>
+                    </tr>
+                    <tr>
+                        <td>35</td>
+                        <td>Quarterly Pollution Trends</td>
+                        <td><span class="td-tag tag-blue">Multi-line</span></td>
+                        <td>Plotly Express</td>
+                        <td>Quarter-labelled axis showing Q-level cycles per year</td>
+                    </tr>
+                    <tr>
+                        <td>36</td>
+                        <td>Seasonal Area Chart by Year</td>
+                        <td><span class="td-tag tag-green">Area Chart</span></td>
+                        <td>Plotly Express</td>
+                        <td>Filled area comparison of seasonal AQI across four years</td>
+                    </tr>
+                    <tr>
+                        <td>37</td>
+                        <td>Year-on-Year Waterfall</td>
+                        <td><span class="td-tag tag-amber">Waterfall</span></td>
+                        <td>Plotly Graph Objects</td>
+                        <td>Incremental national AQI change with 2026 prediction bar</td>
+                    </tr>
+                    <tr>
+                        <td>38</td>
+                        <td>Top 10 Polluted States Funnel</td>
+                        <td><span class="td-tag tag-red">Funnel</span></td>
+                        <td>Plotly Graph Objects</td>
+                        <td>State ranking by severity in funnel form in Rankings tab</td>
+                    </tr>
+                    <tr>
+                        <td>39</td>
+                        <td>Cities vs Pollution Scatter</td>
+                        <td><span class="td-tag tag-blue">Bubble Scatter</span></td>
+                        <td>Plotly Express</td>
+                        <td>Urbanisation proxy analysis in Rankings tab context</td>
+                    </tr>
+                    <tr>
+                        <td>40</td>
+                        <td>Top 10 Cleanest States</td>
+                        <td><span class="td-tag tag-green">Bar</span></td>
+                        <td>Plotly Express</td>
+                        <td>Best-performing states in Rankings tab</td>
+                    </tr>
+                    <tr>
+                        <td>41</td>
+                        <td>Top 15 Most Polluted States</td>
+                        <td><span class="td-tag tag-red">Bar</span></td>
+                        <td>Plotly Express</td>
+                        <td>Worst-performing states in Rankings tab</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 6. LIBRARIES USED -->
+    <div class="section fade-in" id="libraries">
+        <div class="section-header">
+            <div class="section-number">6</div>
+            <div>
+                <div class="section-title">Libraries &amp; Technologies</div>
+                <div class="section-subtitle">Python packages and front-end technologies used throughout the project</div>
+            </div>
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
+                <div class="card-icon" style="background:rgba(5,150,105,0.1);color:var(--success);"><i class="fas fa-table"></i></div>
+                <div class="card-title">pandas</div>
+                <div class="card-body">Primary data manipulation library. Used for CSV ingestion, datetime parsing, groupby aggregations, pivot tables, merge operations, null handling, and dataframe filtering throughout the entire preprocessing and EDA pipeline.</div>
+            </div>
+            <div class="card">
+                <div class="card-icon" style="background:rgba(217,119,6,0.1);color:var(--warn);"><i class="fas fa-calculator"></i></div>
+                <div class="card-title">NumPy</div>
+                <div class="card-body">Used for numerical operations including array reshaping for scikit-learn input (<code>reshape(-1,1)</code>), rounding heatmap annotation values, and computing waterfall deltas.</div>
+            </div>
+            <div class="card">
+                <div class="card-icon" style="background:rgba(124,58,237,0.1);color:var(--purple-main);"><i class="fas fa-chart-bar"></i></div>
+                <div class="card-title">Plotly Express</div>
+                <div class="card-body">High-level Plotly interface used to produce bar charts, line charts, scatter plots, area charts, box plots, violin plots, pie/donut charts, sunburst charts, treemaps, and faceted plots with minimal code.</div>
+            </div>
+            <div class="card">
+                <div class="card-icon" style="background:rgba(192,38,211,0.1);color:#9333ea;"><i class="fas fa-cogs"></i></div>
+                <div class="card-title">Plotly Graph Objects</div>
+                <div class="card-body">Low-level Plotly interface used for custom multi-trace figures: heatmaps with annotations, waterfall charts, funnel charts, radar/spider charts, and the national prediction line chart with dual traces.</div>
+            </div>
+            <div class="card">
+                <div class="card-icon" style="background:rgba(220,38,38,0.1);color:var(--danger);"><i class="fas fa-robot"></i></div>
+                <div class="card-title">scikit-learn</div>
+                <div class="card-body">Machine learning library supplying <code>LinearRegression</code> for ordinary least squares fitting and <code>PolynomialFeatures</code> for quadratic basis expansion. Used to train and predict AQI values for 2026 at state, regional, and national levels.</div>
+            </div>
+            <div class="card">
+                <div class="card-icon" style="background:rgba(99,102,241,0.1);color:#4f46e5;"><i class="fas fa-code"></i></div>
+                <div class="card-title">HTML5 / CSS3 / JavaScript</div>
+                <div class="card-body">The dashboard output is a self-contained HTML file with embedded Plotly JS for interactivity, custom CSS for the dark theme and square-box tab navigation, and vanilla JS for tab switching, scroll progress, particle animation, and counter animation.</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- CTA BOTTOM -->
+<div class="cta-bottom">
+    <h2>Explore the Full Interactive Dashboard</h2>
+    <p>All 41 charts, 8 tab sections, ML predictions, and data tables are available in the visualisation dashboard.</p>
+    <div class="cta-btn-wrap">
+        <a href="AQIHTML.html" class="btn-white">
+            <i class="fas fa-chart-area"></i> &nbsp; Open Dashboard
+        </a>
+        <a href="#dataset" class="btn-outline-white">
+            <i class="fas fa-arrow-up"></i> &nbsp; Back to Top
+        </a>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <p>
+        <strong>India AQI Intelligence Platform</strong> &nbsp;·&nbsp;
+        Formal Data Analysis Report &nbsp;·&nbsp;
+        Dataset: 2022–2025 &nbsp;·&nbsp;
+        Models: Polynomial Regression (deg. 2) with Linear Fallback &nbsp;·&nbsp;
+        Visualisation: Plotly
+    </p>
+    <p style="margin-top:6px;">Generated by the AQI Analytics Pipeline &nbsp;·&nbsp; All rights reserved</p>
+</footer>
+
+<script>
+    window.addEventListener('scroll', () => {
+        const s = document.documentElement;
+        const pct = (s.scrollTop / (s.scrollHeight - s.clientHeight)) * 100;
+        document.getElementById('scroll-bar').style.width = pct + '%';
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.08 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
